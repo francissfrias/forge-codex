@@ -1,26 +1,161 @@
-@import "tailwindcss";
+@import 'tailwindcss';
 
+/* ─── Base ────────────────────────────────────────────────── */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #0e0b14;
+  --foreground: #e8dcc8;
 }
 
+/* ─── Next.js font vars (inline = not re-emitted as CSS vars) */
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --font-dota: var(--font-dota), 'Faculty Glyphic', 'Georgia', serif;
+  --font-ui: var(--font-ui), 'Inter', system-ui, sans-serif;
+  --font-mono: var(--font-mono), 'Courier New', monospace;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+/* ─── Dota Design Tokens ──────────────────────────────────── */
+@theme {
+  /* Backgrounds */
+  --color-dota-bg: #0e0b14;
+  --color-dota-bg-panel: #160f22;
+  --color-dota-bg-card: #1a1228;
+  --color-dota-bg-overlay: #110d1c;
+  --color-dota-bg-hover: #241840;
+  --color-dota-bg-input: #1c1430;
+
+  /* Gold */
+  --color-dota-gold-50: #fffbe6;
+  --color-dota-gold-100: #fff3b0;
+  --color-dota-gold-200: #ffe066;
+  --color-dota-gold-300: #ffd233;
+  --color-dota-gold-400: #f5b800;
+  --color-dota-gold-500: #d4970a;
+  --color-dota-gold-600: #b07a00;
+  --color-dota-gold-700: #7a5200;
+  --color-dota-gold-800: #4d3200;
+  --color-dota-gold-900: #261800;
+  --color-dota-gold: #d4970a;
+
+  /* Attribute — Strength */
+  --color-dota-strength: #c23c2a;
+  --color-dota-strength-light: #ff6e4a;
+  --color-dota-strength-dark: #7a1f10;
+
+  /* Attribute — Agility */
+  --color-dota-agility: #31c47d;
+  --color-dota-agility-light: #5fffb0;
+  --color-dota-agility-dark: #176639;
+
+  /* Attribute — Intelligence */
+  --color-dota-intelligence: #3b87d4;
+  --color-dota-intelligence-light: #82c4ff;
+  --color-dota-intelligence-dark: #1a4778;
+
+  /* Attribute — Universal */
+  --color-dota-universal: #45c4b0;
+  --color-dota-universal-light: #b8f5f0;
+  --color-dota-universal-dark: #1e6b60;
+
+  /* Borders */
+  --color-dota-border: #2e2045;
+  --color-dota-border-bright: #4a3070;
+  --color-dota-border-gold: #8a6a1a;
+
+  /* Text */
+  --color-dota-text-primary: #e8dcc8;
+  --color-dota-text-secondary: #a89070;
+  --color-dota-text-muted: #6a5540;
+  --color-dota-text-gold: #d4970a;
+  --color-dota-text-disabled: #3d2e20;
+
+  /* CTA */
+  --color-dota-cta: #5dbe4a;
+  --color-dota-cta-hover: #72d95e;
+  --color-dota-cta-active: #45a234;
+
+  /* Neutral Item Tier badges */
+  --color-dota-tier-1: #8c9e88;
+  --color-dota-tier-2: #5ba3d9;
+  --color-dota-tier-3: #c47eff;
+  --color-dota-tier-4: #ff9a3c;
+  --color-dota-tier-5: #ff4f4f;
+
+  /* Font size */
+  --text-2xs: 0.625rem;
+  --text-2xs--line-height: 0.875rem;
+
+  /* Spacing */
+  --spacing-hero-card: 4.5rem;
+  --spacing-item-cell: 3rem;
+
+  /* Border radius */
+  --radius-panel: 0.375rem;
+  --radius-badge: 0.125rem;
+
+  /* Shadows */
+  --shadow-dota-panel:
+    0 2px 16px 0 rgba(0, 0, 0, 0.7), inset 0 1px 0 rgba(255, 255, 255, 0.04);
+  --shadow-dota-card: 0 4px 24px 0 rgba(0, 0, 0, 0.8);
+  --shadow-dota-card-hover: 0 0 0 2px #d4970a, 0 4px 24px 0 rgba(0, 0, 0, 0.8);
+  --shadow-glow-gold: 0 0 12px 2px rgba(212, 151, 10, 0.55);
+  --shadow-glow-str: 0 0 12px 2px rgba(194, 60, 42, 0.55);
+  --shadow-glow-agi: 0 0 12px 2px rgba(49, 196, 125, 0.55);
+  --shadow-glow-int: 0 0 12px 2px rgba(59, 135, 212, 0.55);
+  --shadow-glow-uni: 0 0 12px 2px rgba(69, 196, 176, 0.55);
+  --shadow-glow-cta: 0 0 18px 4px rgba(93, 190, 74, 0.5);
+
+  /* Animations */
+  --animate-dota-pulse: dota-pulse 2s ease-in-out infinite;
+  --animate-dota-shimmer: dota-shimmer 2.5s linear infinite;
+
+  @keyframes dota-pulse {
+    0%,
+    100% {
+      opacity: 1;
+    }
+    50% {
+      opacity: 0.6;
+    }
+  }
+  @keyframes dota-shimmer {
+    0% {
+      background-position: -200% center;
+    }
+    100% {
+      background-position: 200% center;
+    }
   }
 }
 
+/* ─── Gradient utilities (@utility = custom Tailwind classes) */
+@utility bg-dota-panel-gradient {
+  background-image: linear-gradient(180deg, #1e1530 0%, #110d1c 100%);
+}
+@utility bg-dota-header-gradient {
+  background-image: linear-gradient(180deg, #241840 0%, #160f22 100%);
+}
+@utility bg-dota-gold-gradient {
+  background-image: linear-gradient(135deg, #f5b800 0%, #8a6a1a 100%);
+}
+@utility bg-dota-str-gradient {
+  background-image: linear-gradient(135deg, #ff6e4a 0%, #7a1f10 100%);
+}
+@utility bg-dota-agi-gradient {
+  background-image: linear-gradient(135deg, #5fffb0 0%, #176639 100%);
+}
+@utility bg-dota-int-gradient {
+  background-image: linear-gradient(135deg, #82c4ff 0%, #1a4778 100%);
+}
+@utility bg-dota-uni-gradient {
+  background-image: linear-gradient(135deg, #b8f5f0 0%, #1e6b60 100%);
+}
+@utility bg-dota-cta-gradient {
+  background-image: linear-gradient(180deg, #72d95e 0%, #3d9930 100%);
+}
+
+/* ─── Base body ───────────────────────────────────────────── */
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-ui);
 }
