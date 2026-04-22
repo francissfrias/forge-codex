@@ -1,36 +1,57 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Forge Codex — Dota 2 Item Builder
 
-## Getting Started
+A **React Flow** practice project built with Next.js 16, React 19, and Tailwind CSS v4.
 
-First, run the development server:
+The goal is a node-based canvas where you drag Dota 2 items onto the board, connect them via recipe edges, and see the combined result — replicating the item-crafting system from Dota 2.
+
+## What it does
+
+- **Canvas** — React Flow workspace where item nodes can be placed and connected
+- **Sidebar** — Category-based item browser (Shop + Neutral tiers); click a category to open a flyout panel with all its items in a grid
+- **Item Browser** (`/items`) — Full paginated view of every Dota 2 item with hover tooltips (stats, abilities, cooldown, mana cost, lore) and a click modal that shows the full recursive recipe tree
+- **Design system** — Custom Dota-themed token set (gold palette, attribute colors, panel shadows, fonts)
+
+## Tech stack
+
+| Tool          | Version | Purpose                                              |
+| ------------- | ------- | ---------------------------------------------------- |
+| Next.js       | 16      | App Router, server components, image optimization    |
+| React         | 19      | UI, React Compiler (automatic memoization)           |
+| @xyflow/react | 12      | Node-based canvas / recipe graph                     |
+| dotaconstants | 10.8    | Dota 2 item data (stats, abilities, recipes, images) |
+| Tailwind CSS  | 4       | Styling via design tokens (`@theme`)                 |
+| TypeScript    | 5       | Full type safety                                     |
+
+## Getting started
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
+pnpm install
 pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000) for the canvas builder.
+Open [http://localhost:3000/items](http://localhost:3000/items) for the full item browser.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Project structure
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```
+src/app/
+├── page.tsx              # Canvas builder (React Flow)
+├── layout.tsx            # Root layout + fonts
+├── globals.css           # Dota design tokens (@theme)
+├── components/
+│   └── Sidebar.tsx       # Category list + flyout item panel
+├── items/
+│   ├── page.tsx          # /items server shell
+│   └── ItemsPageClient.tsx  # Full item browser (tabs, tooltips, modal)
+└── ui/
+    └── page.tsx          # /ui design system showcase
+```
 
-## Learn More
+## Roadmap
 
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- [ ] Drag items from sidebar onto the canvas as item nodes
+- [ ] Connect component items to a crafted item via recipe edges
+- [ ] Auto-detect valid recipes and display the result item
+- [ ] Highlight missing components for a target item
+- [ ] Export / share builds
