@@ -1,8 +1,11 @@
 'use client';
 
+import { useReactFlow } from '@xyflow/react';
 import { items } from 'dotaconstants';
 import Image from 'next/image';
-import { useState } from 'react';
+import { useCallback, useState } from 'react';
+import { useDnD } from '../hooks/useDnd';
+import { DragGhost } from './drag-ghost';
 
 const CDN = 'https://cdn.cloudflare.steamstatic.com';
 
@@ -132,11 +135,41 @@ function countFor(catId: string): number {
 
 // ─── ItemIcon ────────────────────────────────────────────────────────────────
 
+let id = 0;
+const getId = () => `dndnode_${id++}`;
+
 function ItemIcon({ entry }: { entry: ItemEntry }) {
+  const { onDragStart } = useDnD();
+  const { setNodes } = useReactFlow();
+
+  const handlePointerDown = useCallback(
+    (e: React.PointerEvent<HTMLDivElement>) => {
+      console.log('[DnD] 1. pointerDown fired on item:', entry.key);
+      onDragStart(
+        e,
+        ({ position }) => {
+          console.log('[DnD] 3. drop action called! position:', position);
+          setNodes((nds) =>
+            nds.concat({
+              id: getId(),
+              type: 'itemNode',
+              position,
+              data: { key: entry.key, item: entry.item },
+            })
+          );
+          console.log('[DnD] 4. node added to flow');
+        },
+        entry.item.img
+      );
+      console.log('[DnD] 2. onDragStart called — drop action registered');
+    },
+    [onDragStart, setNodes, entry]
+  );
+
   return (
     <div
-      className='flex flex-col items-center gap-0.5 cursor-default'
-      draggable
+      className='flex flex-col items-center gap-0.5 cursor-grab'
+      onPointerDown={handlePointerDown}
     >
       <div className='w-12 h-12 relative rounded overflow-hidden border border-white/5 bg-black/30 hover:border-dota-border-gold transition-colors duration-150'>
         <Image
@@ -259,6 +292,7 @@ function CategoryButton({
 // ─── Sidebar ────────────────────────────────────────────────────────────────
 
 export function Sidebar() {
+  const { isDragging } = useDnD();
   const [activeCategoryId, setActiveCategoryId] = useState<string | null>(null);
 
   function handleCategoryClick(id: string) {
@@ -269,64 +303,70 @@ export function Sidebar() {
     ALL_CATEGORIES.find((c) => c.id === activeCategoryId) ?? null;
 
   return (
-    <div className='flex flex-row h-full absolute left-0 top-0 z-10'>
-      {/* ── Left column: category list ── */}
-      <div className='w-52 h-screen flex flex-col bg-[#111319] border-r border-white/5'>
-        {/* Header */}
-        <div className='px-4 py-3 border-b border-white/5 shrink-0'>
-          <h1 className='font-dota uppercase text-dota-gold font-bold tracking-wide text-lg'>
-            Forge Codex
-          </h1>
-          <p className='text-2xs text-dota-text-muted mt-0.5'>Item Browser</p>
+    <>
+      {isDragging && <DragGhost type='item' />}
+      <div
+        data-no-drop
+        className='flex flex-row h-full absolute left-0 top-0 z-10'
+      >
+        {/* ── Left column: category list ── */}
+        <div className='w-52 h-screen flex flex-col bg-[#111319] border-r border-white/5'>
+          {/* Header */}
+          <div className='px-4 py-3 border-b border-white/5 shrink-0'>
+            <h1 className='font-dota uppercase text-dota-gold font-bold tracking-wide text-lg'>
+              Forge Codex
+            </h1>
+            <p className='text-2xs text-dota-text-muted mt-0.5'>Item Browser</p>
+          </div>
+
+          {/* Scrollable category list */}
+          <nav className='flex-1 overflow-y-auto scrollbar-dark py-1 flex flex-col'>
+            {/* Shop categories */}
+            <div className='px-3 pt-2.5 pb-1'>
+              <span className='text-2xs uppercase tracking-widest text-white/20 font-semibold'>
+                Shop
+              </span>
+            </div>
+            {SHOP_CATEGORIES.map((cat) => (
+              <CategoryButton
+                key={cat.id}
+                def={cat}
+                count={countFor(cat.id)}
+                isActive={activeCategoryId === cat.id}
+                onClick={() => handleCategoryClick(cat.id)}
+              />
+            ))}
+
+            {/* Divider */}
+            <div className='border-t border-white/10 mx-3 my-2' />
+
+            {/* Neutral tiers */}
+            <div className='px-3 pb-1'>
+              <span className='text-2xs uppercase tracking-widest text-white/20 font-semibold'>
+                Neutral
+              </span>
+            </div>
+            {NEUTRAL_CATEGORIES.map((cat) => (
+              <CategoryButton
+                key={cat.id}
+                def={cat}
+                count={countFor(cat.id)}
+                isActive={activeCategoryId === cat.id}
+                onClick={() => handleCategoryClick(cat.id)}
+              />
+            ))}
+          </nav>
         </div>
 
-        {/* Scrollable category list */}
-        <nav className='flex-1 overflow-y-auto scrollbar-dark py-1 flex flex-col'>
-          {/* Shop categories */}
-          <div className='px-3 pt-2.5 pb-1'>
-            <span className='text-2xs uppercase tracking-widest text-white/20 font-semibold'>
-              Shop
-            </span>
-          </div>
-          {SHOP_CATEGORIES.map((cat) => (
-            <CategoryButton
-              key={cat.id}
-              def={cat}
-              count={countFor(cat.id)}
-              isActive={activeCategoryId === cat.id}
-              onClick={() => handleCategoryClick(cat.id)}
-            />
-          ))}
-
-          {/* Divider */}
-          <div className='border-t border-white/10 mx-3 my-2' />
-
-          {/* Neutral tiers */}
-          <div className='px-3 pb-1'>
-            <span className='text-2xs uppercase tracking-widest text-white/20 font-semibold'>
-              Neutral
-            </span>
-          </div>
-          {NEUTRAL_CATEGORIES.map((cat) => (
-            <CategoryButton
-              key={cat.id}
-              def={cat}
-              count={countFor(cat.id)}
-              isActive={activeCategoryId === cat.id}
-              onClick={() => handleCategoryClick(cat.id)}
-            />
-          ))}
-        </nav>
+        {/* ── Right flyout: item panel ── */}
+        {activeDef && (
+          <ItemPanel
+            categoryId={activeDef.id}
+            label={activeDef.label}
+            color={activeDef.color}
+          />
+        )}
       </div>
-
-      {/* ── Right flyout: item panel ── */}
-      {activeDef && (
-        <ItemPanel
-          categoryId={activeDef.id}
-          label={activeDef.label}
-          color={activeDef.color}
-        />
-      )}
-    </div>
+    </>
   );
 }

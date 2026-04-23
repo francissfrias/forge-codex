@@ -9,11 +9,17 @@ import {
   Edge,
   MiniMap,
   Node,
+  OnConnect,
+  OnEdgesChange,
+  OnNodesChange,
   Position,
   ReactFlow,
 } from '@xyflow/react';
-import { useCallback, useState } from 'react';
-import { Sidebar } from './components/Sidebar';
+import { item_colors, item_ids, items } from 'dotaconstants';
+import { useCallback, useMemo, useState } from 'react';
+import DndProvider from './providers/dndprovider';
+import { ItemNode } from './ui/item-node';
+import { Sidebar } from './ui/sidebar';
 
 const initialNodes: Node[] = [
   {
@@ -43,44 +49,49 @@ const initialEdges: Edge[] = [
 ];
 
 const Home = () => {
-  const [nodes, setNodes] = useState(initialNodes);
-  const [edges, setEdges] = useState(initialEdges);
-  const onNodesChange = useCallback(
-    (changes) =>
-      setNodes((nodesSnapshot) => applyNodeChanges(changes, nodesSnapshot)),
-    []
+  const [nodes, setNodes] = useState<Node[]>(initialNodes);
+  const [edges, setEdges] = useState<Edge[]>(initialEdges);
+
+  const onNodesChange: OnNodesChange = useCallback(
+    (changes) => setNodes((nds) => applyNodeChanges(changes, nds)),
+    [setNodes]
   );
-  const onEdgesChange = useCallback(
-    (changes) =>
-      setEdges((edgesSnapshot) => applyEdgeChanges(changes, edgesSnapshot)),
-    []
+  const onEdgesChange: OnEdgesChange = useCallback(
+    (changes) => setEdges((eds) => applyEdgeChanges(changes, eds)),
+    [setEdges]
   );
-  const onConnect = useCallback(
-    (params) => setEdges((edgesSnapshot) => addEdge(params, edgesSnapshot)),
-    []
+  const onConnect: OnConnect = useCallback(
+    (connection) => setEdges((eds) => addEdge(connection, eds)),
+    [setEdges]
   );
+  const nodeTypes = useMemo(() => ({ itemNode: ItemNode }), []);
+
+  console.log(items, item_ids, item_colors);
 
   return (
-    <div className='h-screen w-screen flex bg-dota-bg'>
-      <ReactFlow
-        nodes={nodes}
-        edges={edges}
-        onNodesChange={onNodesChange}
-        onEdgesChange={onEdgesChange}
-        onConnect={onConnect}
-        fitView
-      >
-        <Sidebar />
-        <Background />
-        <Controls className='bottom-0 left-0 translate-x-52' />
-        <MiniMap
-          bgColor='black'
-          maskColor='none'
-          nodeColor='white'
-          className='border-0 ring-0'
-        />
-      </ReactFlow>
-    </div>
+    <DndProvider>
+      <div className='h-screen w-screen flex bg-dota-bg'>
+        <ReactFlow
+          nodes={nodes}
+          edges={edges}
+          onNodesChange={onNodesChange}
+          onEdgesChange={onEdgesChange}
+          onConnect={onConnect}
+          nodeTypes={nodeTypes}
+          fitView
+        >
+          <Sidebar />
+          <Background />
+          <Controls className='bottom-0 left-0 translate-x-52' />
+          <MiniMap
+            bgColor='black'
+            maskColor='none'
+            nodeColor='white'
+            className='border-0 ring-0'
+          />
+        </ReactFlow>
+      </div>
+    </DndProvider>
   );
 };
 
