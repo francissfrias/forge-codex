@@ -6,7 +6,7 @@ const nextConfig: NextConfig = {
     remotePatterns: [
       {
         protocol: 'https',
-        hostname: 'cdn.dota2.com',
+        hostname: 'cdn.cloudflare.steamstatic.com',
         pathname: '/apps/dota2/images/**',
       },
     ],

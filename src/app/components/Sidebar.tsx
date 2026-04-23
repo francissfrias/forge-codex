@@ -4,7 +4,7 @@ import { items } from 'dotaconstants';
 import Image from 'next/image';
 import { useState } from 'react';
 
-const CDN = 'https://cdn.dota2.com';
+const CDN = 'https://cdn.cloudflare.steamstatic.com';
 
 // ─── Types ─────────────────────────────────────────────────────────────────
 
@@ -134,7 +134,10 @@ function countFor(catId: string): number {
 
 function ItemIcon({ entry }: { entry: ItemEntry }) {
   return (
-    <div className='flex flex-col items-center gap-0.5 cursor-default'>
+    <div
+      className='flex flex-col items-center gap-0.5 cursor-default'
+      draggable
+    >
       <div className='w-12 h-12 relative rounded overflow-hidden border border-white/5 bg-black/30 hover:border-dota-border-gold transition-colors duration-150'>
         <Image
           src={`${CDN}${entry.item.img}`}
