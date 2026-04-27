@@ -3,7 +3,7 @@
 import { items } from 'dotaconstants';
 import Image from 'next/image';
 import Link from 'next/link';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
 
 const CDN = 'https://cdn.dota2.com';
 const TOOLTIP_W = 288; // px — matches w-72
@@ -503,10 +503,7 @@ function ItemModal({
   const qualColor = getQualColor(item);
   const hasRecipe = item.components && item.components.length > 0;
 
-  const componentNodes = useMemo(
-    () => (item.components ?? []).map((c) => buildRecipeTree(c)),
-    [item.components]
-  );
+  const componentNodes = (item.components ?? []).map((c) => buildRecipeTree(c));
 
   // Close on ESC
   useEffect(() => {
@@ -671,28 +668,26 @@ export default function ItemsPageClient() {
   const [tooltipPos, setTooltipPos] = useState({ x: 0, y: 0 });
   const [selectedEntry, setSelectedEntry] = useState<ItemEntry | null>(null);
 
-  const filteredItems = useMemo(() => {
-    const tab = ALL_TABS.find((t) => t.id === activeTab) ?? ALL_TABS[0];
-    return GRID_ITEMS.filter((e) => tab.match(e.item));
-  }, [activeTab]);
+  const tab = ALL_TABS.find((t) => t.id === activeTab) ?? ALL_TABS[0];
+  const filteredItems = GRID_ITEMS.filter((e) => tab.match(e.item));
 
-  const handleHover = useCallback((entry: ItemEntry, e: React.MouseEvent) => {
+  const handleHover = (entry: ItemEntry, e: React.MouseEvent) => {
     setHoveredEntry(entry);
     setTooltipPos({ x: e.clientX, y: e.clientY });
-  }, []);
+  };
 
-  const handleMove = useCallback((e: React.MouseEvent) => {
+  const handleMove = (e: React.MouseEvent) => {
     setTooltipPos({ x: e.clientX, y: e.clientY });
-  }, []);
+  };
 
-  const handleLeave = useCallback(() => setHoveredEntry(null), []);
+  const handleLeave = () => setHoveredEntry(null);
 
-  const handleClick = useCallback((entry: ItemEntry) => {
+  const handleClick = (entry: ItemEntry) => {
     setSelectedEntry(entry);
     setHoveredEntry(null);
-  }, []);
+  };
 
-  const handleCloseModal = useCallback(() => setSelectedEntry(null), []);
+  const handleCloseModal = () => setSelectedEntry(null);
 
   const activeColor =
     ALL_TABS.find((t) => t.id === activeTab)?.color ?? '#e8dcc8';

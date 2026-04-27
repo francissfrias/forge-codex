@@ -16,10 +16,12 @@ import {
   ReactFlow,
 } from '@xyflow/react';
 import { item_colors, item_ids, items } from 'dotaconstants';
-import { useCallback, useMemo, useState } from 'react';
+import { useState } from 'react';
 import DndProvider from './providers/dndprovider';
 import { ItemNode } from './ui/item-node';
 import { Sidebar } from './ui/sidebar';
+
+const nodeTypes = { itemNode: ItemNode };
 
 const initialNodes: Node[] = [
   {
@@ -52,19 +54,14 @@ const Home = () => {
   const [nodes, setNodes] = useState<Node[]>(initialNodes);
   const [edges, setEdges] = useState<Edge[]>(initialEdges);
 
-  const onNodesChange: OnNodesChange = useCallback(
-    (changes) => setNodes((nds) => applyNodeChanges(changes, nds)),
-    [setNodes]
-  );
-  const onEdgesChange: OnEdgesChange = useCallback(
-    (changes) => setEdges((eds) => applyEdgeChanges(changes, eds)),
-    [setEdges]
-  );
-  const onConnect: OnConnect = useCallback(
-    (connection) => setEdges((eds) => addEdge(connection, eds)),
-    [setEdges]
-  );
-  const nodeTypes = useMemo(() => ({ itemNode: ItemNode }), []);
+  const onNodesChange: OnNodesChange = (changes) =>
+    setNodes((nds) => applyNodeChanges(changes, nds));
+
+  const onEdgesChange: OnEdgesChange = (changes) =>
+    setEdges((eds) => applyEdgeChanges(changes, eds));
+
+  const onConnect: OnConnect = (connection) =>
+    setEdges((eds) => addEdge(connection, eds));
 
   console.log(items, item_ids, item_colors);
 
